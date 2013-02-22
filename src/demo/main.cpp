@@ -322,7 +322,7 @@ bool read_data( ){
 	return true;
 }
 
-bool process() {
+/*bool process() {
 
 	read_data( );
 
@@ -348,6 +348,86 @@ bool process() {
 	//	cout << g_means[0]->data.fl[0] << " " << g_means[0]->data.fl[1] << " " << g_means[0]->data.fl[2] << endl;
 	return true;
 
+}*/
+
+bool process() {
+	if (averaging) {
+		printf("averaging...\n");
+		g_Estimate->estimate( 	g_im3D,
+								g_means_average,
+								g_clusters,
+								g_votes,
+								g_stride,
+								g_maxv,
+								g_prob_th,
+								g_larger_radius_ratio,
+								g_smaller_radius_ratio,
+								false,
+								g_th
+								);
+	
+		g_means_average.clear();
+
+		for (int i = 0; i < 3; i++) {
+			read_data( );
+			g_means.clear();
+			g_votes.clear();
+			g_clusters.clear();
+			//do the actual estimation
+			g_Estimate->estimate( 	g_im3D,
+									g_means,
+									g_clusters,
+									g_votes,
+									g_stride,
+									g_maxv,
+									g_prob_th,
+									g_larger_radius_ratio,
+									g_smaller_radius_ratio,
+									false,
+									g_th
+								);
+			if(g_means_average.size()>0){
+				for(int j=0;j<g_means.size();++j) {
+			 		for (int k = 0; k < 6; k++){
+				 		printf("i = %i, j = %i, k = %i", i, j, k);
+			 			g_means_average[j][k] = g_means_average[j][k] + g_means[j][k];
+					}
+				}
+			}
+		}
+
+		if(g_means_average.size()>0){
+			for(int j=0;j<g_means.size();++j) {
+		 		for (int k = 0; k < 6; k++){
+		 			g_means[j][k] = g_means_average[j][k]/3;				
+		 		}
+			}
+		}
+	}
+	else {
+		printf("NOT averaging...\n");
+		read_data( );
+			g_means.clear();
+			g_votes.clear();
+			g_clusters.clear();
+			//do the actual estimation
+			g_Estimate->estimate( 	g_im3D,
+									g_means,
+									g_clusters,
+									g_votes,
+									g_stride,
+									g_maxv,
+									g_prob_th,
+									g_larger_radius_ratio,
+									g_smaller_radius_ratio,
+									false,
+									g_th
+								);
+	}
+		//if(g_means.size()>0)
+		//	cout << g_means[0]->data.fl[0] << " " << g_means[0]->data.fl[1] << " " << g_means[0]->data.fl[2] << endl;
+
+	return true;
 }
 
 // ##############################################################################
