@@ -678,6 +678,9 @@ void draw()
 
 			drawCylinder(head_center, head_front, 8, quadric);
 
+			printf("head center: x = %f, z = %f, y = %f\n", head_center[0], head_center[1], head_center[2]);
+			printf("head front: x = %f, z = %f, y = %f\n", head_front[0], head_front[1], head_front[2]);
+			printf("face direction: yaw = %f, pitch = %f, roll? = %f\n\n\n", g_face_curr_dir[0], g_face_curr_dir[1], g_face_curr_dir[2]);
 		}
 
 	}
