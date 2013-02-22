@@ -57,6 +57,8 @@
 #include <XnOS.h>
 #include <XnCppWrapper.h>
 #include <XnCodecIDs.h>
+#include "ros/ros.h"
+#include "std_msgs/String.h"
 
 #include "../CRForestEstimator.h"
 #include "gl_camera.hpp"
@@ -67,6 +69,7 @@ using namespace xn;
 using namespace std;
 using namespace cv;
 
+bool averaging = true;
 // Path to trees
 string g_treepath;
 // Number of trees
@@ -121,6 +124,7 @@ bool g_draw_triangles = false;
 gl_camera g_camera;
 
 std::vector< cv::Vec<float,POSE_SIZE> > g_means; //outputs
+std::vector< cv::Vec<float,POSE_SIZE> > g_means_average; //outputs
 std::vector< std::vector< Vote > > g_clusters; //full clusters of votes
 std::vector< Vote > g_votes; //all votes returned by the forest
 
@@ -736,8 +740,15 @@ void draw()
 
 int main(int argc, char* argv[])
 {
+	ros::init(argc, argv, "HeadPose");
 
-	if( argc != 2 ){
+	ros::NodeHandle n;
+
+	ros::Publisher head_pose_pub = n.advertise<std_msgs::String>("Head_Pose_Data", 1000);
+
+	ros::Rate loop_rate(10);
+	while (ros::ok()) {
+/*	if( argc != 2 ){
 
 		cout << "usage: ./head_demo config_file" << endl;
 		exit(-1);
@@ -750,8 +761,8 @@ int main(int argc, char* argv[])
 		cerr << "could not read forest!" << endl;
 		exit(-1);
 	}
-
-	initialize();
+*/
+/*	initialize();
 
 	// initialize GLUT
 	glutInitWindowSize(800, 800);
@@ -767,7 +778,7 @@ int main(int argc, char* argv[])
 	glutIdleFunc(idle);
 	glutMainLoop();
 
-	return 0;
+	return 0;*/
 
-
+	}
 }
