@@ -67,6 +67,7 @@ using namespace xn;
 using namespace std;
 using namespace cv;
 
+bool averaging = true;
 // Path to trees
 string g_treepath;
 // Number of trees
@@ -121,6 +122,7 @@ bool g_draw_triangles = false;
 gl_camera g_camera;
 
 std::vector< cv::Vec<float,POSE_SIZE> > g_means; //outputs
+std::vector< cv::Vec<float,POSE_SIZE> > g_means_average; //outputs
 std::vector< std::vector< Vote > > g_clusters; //full clusters of votes
 std::vector< Vote > g_votes; //all votes returned by the forest
 
