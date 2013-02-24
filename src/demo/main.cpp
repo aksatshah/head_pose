@@ -58,7 +58,7 @@
 #include <XnCppWrapper.h>
 #include <XnCodecIDs.h>
 #include "ros/ros.h"
-#include "std_msgs/String.h"
+#include "head_pose/head_data.h"
 
 #include "../CRForestEstimator.h"
 #include "gl_camera.hpp"
@@ -744,10 +744,9 @@ int main(int argc, char* argv[])
 
 	ros::NodeHandle n;
 
-	ros::Publisher head_pose_pub = n.advertise<std_msgs::String>("Head_Pose_Data", 1000);
+	ros::Publisher head_pose_pub = n.advertise<head_pose::head_data>("Head_Pose_Data", 1000);
 
 	ros::Rate loop_rate(10);
-	while (ros::ok()) {
 /*	if( argc != 2 ){
 
 		cout << "usage: ./head_demo config_file" << endl;
@@ -779,6 +778,25 @@ int main(int argc, char* argv[])
 	glutMainLoop();
 
 	return 0;*/
+	while (ros::ok()) {
+		head_pose::head_data msg;
+		msg.x_center = 0.0;
+		msg.y_center = 0.0;
+		msg.z_center = 0.0;
+
+		msg.x_front = 0.0;
+		msg.y_front = 0.0;
+		msg.z_front = 0.0;
+
+		msg.yaw = 0.0;
+		msg.roll = 0.0;
+		msg.pitch = 0.0;
+		
+		head_pose_pub.publish(msg);
+
+    	ros::spinOnce();
+
+    	loop_rate.sleep();
 
 	}
 }
