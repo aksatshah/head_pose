@@ -261,7 +261,7 @@ int main(int argc, char* argv[])
 	g_clusters.clear();
 
 	string pose_filename(depth_fname.substr(0,depth_fname.find_last_of('_')));
-	pose_filename += "_pose.bin";
+	pose_filename += "_pose.txt";
 
 	cv::Vec<float,POSE_SIZE> gt;
 	bool have_gt = false;
