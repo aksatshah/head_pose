@@ -747,7 +747,7 @@ int main(int argc, char* argv[])
 	ros::Publisher head_pose_pub = n.advertise<head_pose::head_data>("Head_Pose_Data", 1000);
 
 	ros::Rate loop_rate(10);
-/*	if( argc != 2 ){
+	if( argc != 2 ){
 
 		cout << "usage: ./head_demo config_file" << endl;
 		exit(-1);
@@ -760,8 +760,8 @@ int main(int argc, char* argv[])
 		cerr << "could not read forest!" << endl;
 		exit(-1);
 	}
-*/
-/*	initialize();
+
+	initialize();
 
 	// initialize GLUT
 	glutInitWindowSize(800, 800);
@@ -772,12 +772,12 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(draw);
 	glutMouseFunc(mb);
 	glutMotionFunc(mm);
-	glutKeyboardFunc(key);
+	// glutKeyboardFunc(key);
 	glutReshapeFunc(resize);
-	glutIdleFunc(idle);
-	glutMainLoop();
+	// glutIdleFunc(idle);
+	// glutMainLoop();
 
-	return 0;*/
+	// return 0;
 	while (ros::ok()) {
 		head_pose::head_data msg;
 		msg.x_center = 0.0;
@@ -788,9 +788,9 @@ int main(int argc, char* argv[])
 		msg.y_front = 0.0;
 		msg.z_front = 0.0;
 
-		msg.yaw = 0.0;
+		msg.yaw = g_face_curr_dir[0];
 		msg.roll = 0.0;
-		msg.pitch = 0.0;
+		msg.pitch = g_face_curr_dir[1];
 		
 		head_pose_pub.publish(msg);
 
