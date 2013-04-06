@@ -740,14 +740,14 @@ void draw()
 
 int main(int argc, char* argv[])
 {
-	ros::init(argc, argv, "HeadPose");
+/*	ros::init(argc, argv, "HeadPose");
 
 	ros::NodeHandle n;
 
 	ros::Publisher head_pose_pub = n.advertise<head_pose::head_data>("Head_Pose_Data", 1000);
 
-	ros::Rate loop_rate(10);
-/*	if( argc != 2 ){
+	ros::Rate loop_rate(10);*/
+	if( argc != 2 ){
 
 		cout << "usage: ./head_demo config_file" << endl;
 		exit(-1);
@@ -760,8 +760,8 @@ int main(int argc, char* argv[])
 		cerr << "could not read forest!" << endl;
 		exit(-1);
 	}
-*/
-/*	initialize();
+
+	initialize();
 
 	// initialize GLUT
 	glutInitWindowSize(800, 800);
@@ -777,8 +777,8 @@ int main(int argc, char* argv[])
 	glutIdleFunc(idle);
 	glutMainLoop();
 
-	return 0;*/
-	while (ros::ok()) {
+	return 0;
+/*	while (ros::ok()) {
 		head_pose::head_data msg;
 		msg.x_center = 0.0;
 		msg.y_center = 0.0;
@@ -798,5 +798,5 @@ int main(int argc, char* argv[])
 
     	loop_rate.sleep();
 
-	}
+	}*/
 }
