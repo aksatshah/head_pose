@@ -130,6 +130,9 @@ std::vector< Vote > g_votes; //all votes returned by the forest
 
 math_vector_3f g_face_curr_dir, g_face_dir(0,0,-1);
 
+ros::Publisher head_pose_pub;
+// ros::Rate loop_rate(10);
+
 void drawCylinder( const math_vector_3f& p1, const math_vector_3f& p2 , float radius, GLUquadric *quadric)
 {
 	math_vector_3f d = p2 - p1;
@@ -730,6 +733,30 @@ void draw()
 
 	} //show votes
 
+		ros::NodeHandle n;
+
+		head_pose::head_data msg;
+		msg.x_center = 0.0;
+		msg.y_center = 0.0;
+		msg.z_center = 0.0;
+
+		msg.x_front = 0.0;
+		msg.y_front = 0.0;
+		msg.z_front = 0.0;
+
+		msg.yaw = g_face_curr_dir[0];
+		msg.roll = 0.0;
+		msg.pitch = g_face_curr_dir[1];
+
+		head_pose_pub = n.advertise<head_pose::head_data>("Head_Pose_Data", 1000);
+		
+		head_pose_pub.publish(msg);
+
+    	ros::spinOnce();
+    	ros::Rate loop_rate(10);
+    	loop_rate.sleep();
+
+
 	gluDeleteQuadric(point);
 	gluDeleteQuadric(quadric);
 
@@ -742,11 +769,10 @@ int main(int argc, char* argv[])
 {
 	ros::init(argc, argv, "HeadPose");
 
-	ros::NodeHandle n;
+	// ros::NodeHandle n;
 
-	ros::Publisher head_pose_pub = n.advertise<head_pose::head_data>("Head_Pose_Data", 1000);
+	//head_pose_pub = n.advertise<head_pose::head_data>("Head_Pose_Data", 1000);
 
-	ros::Rate loop_rate(10);
 	if( argc != 2 ){
 
 		cout << "usage: ./head_demo config_file" << endl;
@@ -772,13 +798,34 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(draw);
 	glutMouseFunc(mb);
 	glutMotionFunc(mm);
-	// glutKeyboardFunc(key);
+	glutKeyboardFunc(key);
 	glutReshapeFunc(resize);
-	// glutIdleFunc(idle);
-	// glutMainLoop();
+/*
+		head_pose::head_data msg;
+		msg.x_center = 0.0;
+		msg.y_center = 0.0;
+		msg.z_center = 0.0;
 
-	// return 0;
-	while (ros::ok()) {
+		msg.x_front = 0.0;
+		msg.y_front = 0.0;
+		msg.z_front = 0.0;
+
+		msg.yaw = g_face_curr_dir[0];
+		msg.roll = 0.0;
+		msg.pitch = g_face_curr_dir[1];
+		
+		head_pose_pub.publish(msg);
+
+    	ros::spinOnce();
+
+    	loop_rate.sleep();*/
+
+
+	glutIdleFunc(idle);
+	glutMainLoop();
+
+	return 0;
+/*	while (ros::ok()) {
 		head_pose::head_data msg;
 		msg.x_center = 0.0;
 		msg.y_center = 0.0;
@@ -798,5 +845,5 @@ int main(int argc, char* argv[])
 
     	loop_rate.sleep();
 
-	}
+	}*/
 }
