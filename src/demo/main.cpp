@@ -69,6 +69,13 @@ using namespace xn;
 using namespace std;
 using namespace cv;
 
+// Pointer to publisher
+ros::Publisher * head_pose_pub = NULL;
+// Pointer for ros::NodeHandle
+ros::NodeHandle * n = NULL;
+// Flag for GLUT running - to close GLUT and ROS cleanly
+bool running = true;
+// Flag to average head data or not
 bool averaging = true;
 // Path to trees
 string g_treepath;
@@ -129,8 +136,6 @@ std::vector< std::vector< Vote > > g_clusters; //full clusters of votes
 std::vector< Vote > g_votes; //all votes returned by the forest
 
 math_vector_3f g_face_curr_dir, g_face_dir(0,0,-1);
-
-ros::Publisher head_pose_pub;
 // ros::Rate loop_rate(10);
 
 void drawCylinder( const math_vector_3f& p1, const math_vector_3f& p2 , float radius, GLUquadric *quadric)
@@ -557,7 +562,6 @@ void mb(int button, int state, int x, int y)
 }
 
 void idle(){
-
 	process();
 	g_frame_no++;
 
@@ -566,7 +570,6 @@ void idle(){
 // draws the scan and the estimated head pose
 void draw()
 {
-
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_DEPTH_TEST);
 
@@ -733,28 +736,28 @@ void draw()
 
 	} //show votes
 
-		ros::NodeHandle n;
 
-		head_pose::head_data msg;
-		msg.x_center = 0.0;
-		msg.y_center = 0.0;
-		msg.z_center = 0.0;
+	head_pose::head_data msg;
+	msg.x_center = 0.0;
+	msg.y_center = 0.0;
+	msg.z_center = 0.0;
 
-		msg.x_front = 0.0;
-		msg.y_front = 0.0;
-		msg.z_front = 0.0;
+	msg.x_front = 0.0;
+	msg.y_front = 0.0;
+	msg.z_front = 0.0;
 
-		msg.yaw = g_face_curr_dir[0];
-		msg.roll = 0.0;
-		msg.pitch = g_face_curr_dir[1];
+	msg.yaw = g_face_curr_dir[0];
+	msg.roll = 0.0;
+	msg.pitch = g_face_curr_dir[1];
 
-		head_pose_pub = n.advertise<head_pose::head_data>("Head_Pose_Data", 1000);
-		
-		head_pose_pub.publish(msg);
 
-    	ros::spinOnce();
-    	ros::Rate loop_rate(50);
-    	loop_rate.sleep();
+	// head_pose_pub = n.advertise<head_pose::head_data>("Head_Pose_Data", 1000);
+	
+	head_pose_pub->publish(msg);
+
+	// ros::spinOnce();
+	ros::Rate loop_rate(50);
+	loop_rate.sleep();
 
 
 	gluDeleteQuadric(point);
@@ -765,9 +768,20 @@ void draw()
 
 }
 
+void close() {
+	running = false;
+	printf("closing head tracking...\n");
+}
+
 int main(int argc, char* argv[])
 {
 	ros::init(argc, argv, "HeadPose");
+
+	n = new ros::NodeHandle;
+
+	head_pose_pub = new ros::Publisher(n->advertise<head_pose::head_data>("Head_Pose_Data", 1000));
+
+	// head_pose_pub = n->advertise<head_pose::head_data>("Head_Pose_Data", 1000);
 
 	// ros::NodeHandle n;
 
@@ -800,50 +814,22 @@ int main(int argc, char* argv[])
 	glutMotionFunc(mm);
 	glutKeyboardFunc(key);
 	glutReshapeFunc(resize);
-/*
-		head_pose::head_data msg;
-		msg.x_center = 0.0;
-		msg.y_center = 0.0;
-		msg.z_center = 0.0;
+	glutCloseFunc(close);
 
-		msg.x_front = 0.0;
-		msg.y_front = 0.0;
-		msg.z_front = 0.0;
+	// glutIdleFunc(idle);
+	// glutMainLoop();
 
-		msg.yaw = g_face_curr_dir[0];
-		msg.roll = 0.0;
-		msg.pitch = g_face_curr_dir[1];
-		
-		head_pose_pub.publish(msg);
+	while (ros::ok() && running) {
+		ros::spinOnce();
+		process();
+		glutMainLoopEvent();
+	}
 
-    	ros::spinOnce();
+	printf("closing head tracking...\n");
 
-    	loop_rate.sleep();*/
-
-
-	glutIdleFunc(idle);
-	glutMainLoop();
+	glutDestroyWindow(1);
+	delete head_pose_pub;
+	delete n;
 
 	return 0;
-/*	while (ros::ok()) {
-		head_pose::head_data msg;
-		msg.x_center = 0.0;
-		msg.y_center = 0.0;
-		msg.z_center = 0.0;
-
-		msg.x_front = 0.0;
-		msg.y_front = 0.0;
-		msg.z_front = 0.0;
-
-		msg.yaw = g_face_curr_dir[0];
-		msg.roll = 0.0;
-		msg.pitch = g_face_curr_dir[1];
-		
-		head_pose_pub.publish(msg);
-
-    	ros::spinOnce();
-
-    	loop_rate.sleep();
-
-	}*/
 }
