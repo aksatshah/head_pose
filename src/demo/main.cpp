@@ -135,7 +135,7 @@ std::vector< cv::Vec<float,POSE_SIZE> > g_means_average; //outputs
 std::vector< std::vector< Vote > > g_clusters; //full clusters of votes
 std::vector< Vote > g_votes; //all votes returned by the forest
 
-math_vector_3f g_face_curr_dir, g_face_dir(0,0,-1);
+math_vector_3f g_face_curr_dir, g_face_dir(0,0,-1), head_center, head_front;
 // ros::Rate loop_rate(10);
 
 void drawCylinder( const math_vector_3f& p1, const math_vector_3f& p2 , float radius, GLUquadric *quadric)
@@ -676,20 +676,22 @@ void draw()
 
 			rigid_motion<float> rm;
 			rm.m_rotation = euler_to_rotation_matrix( mult*g_means[i][3], mult*g_means[i][4], mult*g_means[i][5] );
-			math_vector_3f head_center( g_means[i][0], g_means[i][1], g_means[i][2] );
-
+			// math_vector_3f head_center( g_means[i][0], g_means[i][1], g_means[i][2] );
+			head_center[0] = g_means[i][0];
+			head_center[1] = g_means[i][1];
+			head_center[2] = g_means[i][2];			
 			glPushMatrix();
 			glTranslatef( head_center[0], head_center[1], head_center[2] );
 			gluSphere( point, 10.f, 10, 10 );
 			glPopMatrix();
 
 			g_face_curr_dir = rm.m_rotation * (g_face_dir);
-			math_vector_3f head_front(head_center + 150.f*g_face_curr_dir);
-
+			// math_vector_3f head_front(head_center + 150.f*g_face_curr_dir);
+			head_front = head_center + 150.f*g_face_curr_dir;
 			drawCylinder(head_center, head_front, 8, quadric);
 
-			printf("head center: x = %f, z = %f, y = %f\n", head_center[0], head_center[1], head_center[2]);
-			printf("head front: x = %f, z = %f, y = %f\n", head_front[0], head_front[1], head_front[2]);
+			printf("head center: x = %fm, y = %fm, z = %fm\n", head_center[0]/1000, head_center[2]/1000, -head_center[1]/1000);
+			printf("head front: x = %fm, y = %fm, z = %fm\n", head_front[0]/1000, head_front[2]/1000, -head_front[1]/1000);
 			printf("face direction: yaw = %f, pitch = %f, roll? = %f\n\n\n", g_face_curr_dir[0], g_face_curr_dir[1], g_face_curr_dir[2]);
 		}
 
@@ -736,18 +738,24 @@ void draw()
 
 	} //show votes
 
+	glColor3f(0.0f,1.0f,0.0f);
+
+	GLUquadric *quadric2 = gluNewQuadric();
+	math_vector_3f origin (0.0,0.0,0.0);
+	math_vector_3f origin2(0.0f, 0.0f, 1000.0f);
+	drawCylinder(origin, origin2, 8, quadric2);
 
 	head_pose::head_data msg;
-	msg.x_center = 0.0;
-	msg.y_center = 0.0;
-	msg.z_center = 0.0;
+	msg.x_center = head_center[0];
+	msg.y_center = head_center[2];
+	msg.z_center = -head_center[1];
 
-	msg.x_front = 0.0;
-	msg.y_front = 0.0;
-	msg.z_front = 0.0;
+	msg.x_front = head_front[0];
+	msg.y_front = head_front[2];
+	msg.z_front = -head_front[1];
 
 	msg.yaw = g_face_curr_dir[0];
-	msg.roll = 0.0;
+	msg.roll = g_face_curr_dir[2];
 	msg.pitch = g_face_curr_dir[1];
 
 
@@ -762,6 +770,7 @@ void draw()
 
 	gluDeleteQuadric(point);
 	gluDeleteQuadric(quadric);
+	gluDeleteQuadric(quadric2);
 
 	glutSwapBuffers();
 	glutPostRedisplay();
