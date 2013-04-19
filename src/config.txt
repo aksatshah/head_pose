@@ -1,5 +1,5 @@
 #Path_to_trees_and_prefix
-/home/aksat/ros_workspace/head_pose/trees/tree
+/home/haroldsoh/ros_workspace/head_pose/trees/tree
 #Trees_no
 10
 #max_variance

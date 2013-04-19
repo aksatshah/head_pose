@@ -380,7 +380,7 @@ bool process() {
 	
 		g_means_average.clear();
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 5; i++) {
 			read_data( );
 			g_means.clear();
 			g_votes.clear();
@@ -411,7 +411,7 @@ bool process() {
 		if(g_means_average.size()>0){
 			for(int j=0;j<g_means.size();++j) {
 		 		for (int k = 0; k < 6; k++){
-		 			g_means[j][k] = g_means_average[j][k]/3;				
+		 			g_means[j][k] = g_means_average[j][k]/5;				
 		 		}
 			}
 		}
@@ -690,8 +690,8 @@ void draw()
 			head_front = head_center + 150.f*g_face_curr_dir;
 			drawCylinder(head_center, head_front, 8, quadric);
 
-			printf("head center: x = %fm, y = %fm, z = %fm\n", head_center[0]/1000, head_center[2]/1000, -head_center[1]/1000);
-			printf("head front: x = %fm, y = %fm, z = %fm\n", head_front[0]/1000, head_front[2]/1000, -head_front[1]/1000);
+			printf("head center: y = %fm, x = %fm, z = %fm\n", head_center[0]/1000, head_center[2]/1000, -head_center[1]/1000);
+			printf("head front: y = %fm, x = %fm, z = %fm\n", head_front[0]/1000, head_front[2]/1000, -head_front[1]/1000);
 			printf("face direction: yaw = %f, pitch = %f, roll? = %f\n\n\n", g_face_curr_dir[0], g_face_curr_dir[1], g_face_curr_dir[2]);
 		}
 
@@ -746,12 +746,12 @@ void draw()
 	drawCylinder(origin, origin2, 8, quadric2);
 
 	head_pose::head_data msg;
-	msg.x_center = head_center[0];
-	msg.y_center = head_center[2];
+	msg.x_center = head_center[2];
+	msg.y_center = head_center[0];
 	msg.z_center = -head_center[1];
 
-	msg.x_front = head_front[0];
-	msg.y_front = head_front[2];
+	msg.x_front = head_front[2];
+	msg.y_front = head_front[0];
 	msg.z_front = -head_front[1];
 
 	msg.yaw = g_face_curr_dir[0];
